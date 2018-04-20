@@ -1,4 +1,4 @@
-package immutableVector.sizeNotInBuffer.fixedHeight.fixedBufferSize.bufferSize8
+package immutableVector.sizeNotInBuffer.variableHeight.fixedBufferSize.bufferSize8
 
 import immutableVector.ImmutableVector
 import immutableVector.TwoBufferIterator
@@ -11,14 +11,9 @@ internal class MidVector<T>(private val lhs: Array<T>,
             var rest = arrayOfNulls<Any?>(MAX_BUFFER_SIZE)
             rest[0] = this.lhs
             rest[1] = this.rhs
-            repeat(REST_HEIGHT - 2) {
-                val newRest = arrayOfNulls<Any?>(MAX_BUFFER_SIZE)
-                newRest[0] = rest
-                rest = newRest
-            }
             val last = arrayOfNulls<Any?>(MAX_BUFFER_SIZE)
             last[0] = e
-            return BigVector(rest, last as Array<T>, this.size + 1)
+            return BigVector(rest, last as Array<T>, this.size + 1, LOG_MAX_BUFFER_SIZE)
         }
 
         val newRhs = arrayOfNulls<Any?>(MAX_BUFFER_SIZE) as Array<T>

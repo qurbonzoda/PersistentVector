@@ -1,11 +1,12 @@
-package immutableVector.sizeNotInBuffer.fixedHeight.fixedBufferSize.bufferSize8
+package immutableVector.sizeNotInBuffer.variableHeight.fixedBufferSize.bufferSize8
 
 import immutableVector.BigVectorIterator
 import immutableVector.ImmutableVector
 
 internal class BigVector<T>(private val rest: Array<Any?>,
                             private val last: Array<T>,
-                            override val size: Int) : ImmutableVector<T> {
+                            override val size: Int,
+                            private val shiftStart: Int) : ImmutableVector<T> {
     private fun lastOff(): Int {
         return ((this.size - 1) shr LOG_MAX_BUFFER_SIZE) shl LOG_MAX_BUFFER_SIZE
     }
@@ -31,12 +32,20 @@ internal class BigVector<T>(private val rest: Array<Any?>,
         if (lastSize < MAX_BUFFER_SIZE) {
             System.arraycopy(this.last, 0, newLast, 0, MAX_BUFFER_SIZE)
             newLast[lastSize] = e
-            return BigVector(this.rest, newLast, this.size + 1)
+            return BigVector(this.rest, newLast, this.size + 1, this.shiftStart)
         }
 
-        val newRest = pushLast(SHIFT_START, this.rest, this.last)
+        if (this.size shr LOG_MAX_BUFFER_SIZE > 1 shl this.shiftStart) {
+            var newRest = arrayOfNulls<Any?>(MAX_BUFFER_SIZE)
+            newRest[0] = this.rest
+            newRest = pushLast(this.shiftStart + LOG_MAX_BUFFER_SIZE, newRest, this.last)
+            newLast[0] = e
+            return BigVector(newRest, newLast, this.size + 1, this.shiftStart + LOG_MAX_BUFFER_SIZE)
+        }
+
+        val newRest = pushLast(this.shiftStart, this.rest, this.last)
         newLast[0] = e
-        return BigVector(newRest, newLast, this.size + 1)
+        return BigVector(newRest, newLast, this.size + 1, this.shiftStart)
     }
 
     private fun bufferFor(index: Int): Array<T> {
@@ -45,7 +54,7 @@ internal class BigVector<T>(private val rest: Array<Any?>,
             return this.last
         }
         var buffer = this.rest
-        for (shift in SHIFT_START downTo 1 step LOG_MAX_BUFFER_SIZE) {
+        for (shift in this.shiftStart downTo 1 step LOG_MAX_BUFFER_SIZE) {
             buffer = buffer[(index shr shift) and MAX_BUFFER_SIZE_MINUS_ONE] as Array<Any?>
         }
         return buffer as Array<T>
@@ -60,6 +69,7 @@ internal class BigVector<T>(private val rest: Array<Any?>,
     }
 
     override fun iterator(): Iterator<T> {
-        return BigVectorIterator(this.rest, this.last, this.size, REST_HEIGHT, LOG_MAX_BUFFER_SIZE)
+        return BigVectorIterator(this.rest, this.last, this.size,
+                this.shiftStart / LOG_MAX_BUFFER_SIZE + 1, LOG_MAX_BUFFER_SIZE)
     }
 }

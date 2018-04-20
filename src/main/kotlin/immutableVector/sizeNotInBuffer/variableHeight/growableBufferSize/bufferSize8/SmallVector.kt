@@ -1,4 +1,4 @@
-package immutableVector.sizeNotInBuffer.fixedHeight.growableBufferSize.bufferSize8
+package immutableVector.sizeNotInBuffer.variableHeight.growableBufferSize.bufferSize8
 
 import immutableVector.BufferIterator
 import immutableVector.ImmutableVector

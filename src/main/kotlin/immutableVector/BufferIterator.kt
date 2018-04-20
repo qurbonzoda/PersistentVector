@@ -1,8 +1,9 @@
 package immutableVector
 
-import java.util.NoSuchElementException
+import java.util.*
 
-class BufferIterator<out T>(private val buffer: Array<T>, private val size: Int): Iterator<T> {
+internal class BufferIterator<out T>(private val buffer: Array<T>,
+                                     private val size: Int) : Iterator<T> {
     private var index = 0
 
     override fun hasNext(): Boolean {

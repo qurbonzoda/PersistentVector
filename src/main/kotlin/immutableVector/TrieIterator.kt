@@ -1,9 +1,9 @@
 package immutableVector
 
-class TrieIterator<out T>(root: Array<Any?>,
-                          val size: Int,
-                          private val height: Int,
-                          private val logMaxBufferSize: Int): Iterator<T> {
+internal class TrieIterator<out T>(root: Array<Any?>,
+                                   val size: Int,
+                                   private val height: Int,
+                                   private val logMaxBufferSize: Int) : Iterator<T> {
     private val path: Array<Any?> = arrayOfNulls<Any?>(this.height)
     private var index = 0
     private val maxBufferSizeMinusOne = (1 shl this.logMaxBufferSize) - 1

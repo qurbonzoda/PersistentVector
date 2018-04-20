@@ -1,10 +1,10 @@
 package immutableVector
 
-class BigVectorIterator<out T>(rest: Array<Any?>,
-                               private val last: Array<T>,
-                               private val size: Int,
-                               restHeight: Int,
-                               logMaxBufferSize: Int): Iterator<T> {
+internal class BigVectorIterator<out T>(rest: Array<Any?>,
+                                        private val last: Array<T>,
+                                        private val size: Int,
+                                        restHeight: Int,
+                                        logMaxBufferSize: Int) : Iterator<T> {
     private var index = 0
     private val trieIterator = TrieIterator<T>(rest, ((this.size - 1) shr logMaxBufferSize) shl logMaxBufferSize,
             restHeight, logMaxBufferSize)

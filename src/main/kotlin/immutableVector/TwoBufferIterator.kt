@@ -1,8 +1,8 @@
 package immutableVector
 
-class TwoBufferIterator<out T>(private val first: Array<T>,
-                               private val second: Array<T>,
-                               private val size: Int): Iterator<T> {
+internal class TwoBufferIterator<out T>(private val first: Array<T>,
+                                        private val second: Array<T>,
+                                        private val size: Int) : Iterator<T> {
     private var index = 0
 
     override fun hasNext(): Boolean {
