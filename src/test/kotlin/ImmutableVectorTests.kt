@@ -1,5 +1,5 @@
 import immutableVector.ImmutableVector
-import immutableVector.sizeNotInBuffer.variableHeight.fixedBufferSize.bufferSize8.emptyVector
+import immutableVector.sizeNotInBuffer.variableHeight.fixedBufferSize.bufferSize32.emptyVector
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import java.util.*
