@@ -6,18 +6,25 @@ import immutableVector.TwoBufferIterator
 internal class MidVector<T>(private val lhs: Array<T>,
                             private val rhs: Array<T>,
                             override val size: Int) : ImmutableVector<T> {
+    private fun <U> copyBuffer(buffer: Array<U>): Array<U> {
+        return buffer.copyOf()
+    }
+
+    private fun bufferWithOnlyElement(e: Any?): Array<Any?> {
+        val buffer = arrayOfNulls<Any?>(MAX_BUFFER_SIZE)
+        buffer[0] = e
+        return buffer
+    }
+
     override fun addLast(e: T): ImmutableVector<T> {
         if (this.size shr 1 == MAX_BUFFER_SIZE) {
-            var rest = arrayOfNulls<Any?>(MAX_BUFFER_SIZE)
-            rest[0] = this.lhs
+            val rest = this.bufferWithOnlyElement(this.lhs)
             rest[1] = this.rhs
-            val last = arrayOfNulls<Any?>(MAX_BUFFER_SIZE)
-            last[0] = e
-            return BigVector(rest, last as Array<T>, this.size + 1, LOG_MAX_BUFFER_SIZE)
+            val last = this.bufferWithOnlyElement(e) as Array<T>
+            return BigVector(rest, last, this.size + 1, LOG_MAX_BUFFER_SIZE)
         }
 
-        val newRhs = arrayOfNulls<Any?>(MAX_BUFFER_SIZE) as Array<T>
-        System.arraycopy(this.rhs, 0, newRhs, 0, MAX_BUFFER_SIZE)
+        val newRhs = this.copyBuffer(this.rhs)
         newRhs[this.size - MAX_BUFFER_SIZE] = e
         return MidVector(this.lhs, newRhs, this.size + 1)
     }

@@ -4,14 +4,23 @@ import immutableVector.BufferIterator
 import immutableVector.ImmutableVector
 
 internal class SmallVector<T>(private val buffer: Array<T>, override val size: Int) : ImmutableVector<T> {
+    private fun <U> copyBuffer(buffer: Array<U>): Array<U> {
+        return buffer.copyOf()
+    }
+
+    private fun bufferWithOnlyElement(e: Any?): Array<Any?> {
+        val buffer = arrayOfNulls<Any?>(MAX_BUFFER_SIZE)
+        buffer[0] = e
+        return buffer
+    }
+
     override fun addLast(e: T): ImmutableVector<T> {
-        val newBuffer = arrayOfNulls<Any?>(MAX_BUFFER_SIZE) as Array<T>
         if (this.size == MAX_BUFFER_SIZE) {
-            newBuffer[0] = e
+            val newBuffer = this.bufferWithOnlyElement(e) as Array<T>
             return MidVector(this.buffer, newBuffer, this.size + 1)
         }
 
-        System.arraycopy(this.buffer, 0, newBuffer, 0, MAX_BUFFER_SIZE)
+        val newBuffer = this.copyBuffer(this.buffer)
         newBuffer[this.size] = e
         return SmallVector(newBuffer, this.size + 1)
     }

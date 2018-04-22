@@ -10,11 +10,22 @@ internal class BigVector<T>(private val rest: Array<Any?>,
         return ((this.size - 1) shr LOG_MAX_BUFFER_SIZE) shl LOG_MAX_BUFFER_SIZE
     }
 
+    private fun <U> copyBuffer(buffer: Array<U>): Array<U> {
+        return buffer.copyOf()
+    }
+
+    private fun bufferWithOnlyElement(e: Any?): Array<Any?> {
+        val buffer = arrayOfNulls<Any?>(MAX_BUFFER_SIZE)
+        buffer[0] = e
+        return buffer
+    }
+
     private fun pushLast(shift: Int, restNode: Array<Any?>?, last: Array<T>): Array<Any?> {
         val index = ((this.size - 1) shr shift) and MAX_BUFFER_SIZE_MINUS_ONE
-        val newRestNode = arrayOfNulls<Any?>(MAX_BUFFER_SIZE)
-        if (restNode != null) {
-            System.arraycopy(restNode, 0, newRestNode, 0, MAX_BUFFER_SIZE)
+        val newRestNode = if (restNode != null) {
+            this.copyBuffer(restNode)
+        } else {
+            arrayOfNulls<Any?>(MAX_BUFFER_SIZE)
         }
 
         if (shift == LOG_MAX_BUFFER_SIZE) {
@@ -26,16 +37,15 @@ internal class BigVector<T>(private val rest: Array<Any?>,
     }
 
     override fun addLast(e: T): ImmutableVector<T> {
-        val newLast = arrayOfNulls<Any?>(MAX_BUFFER_SIZE) as Array<T>
         val lastSize = this.size - this.lastOff()
         if (lastSize < MAX_BUFFER_SIZE) {
-            System.arraycopy(this.last, 0, newLast, 0, MAX_BUFFER_SIZE)
+            val newLast = this.copyBuffer(this.last)
             newLast[lastSize] = e
             return BigVector(this.rest, newLast, this.size + 1)
         }
 
         val newRest = pushLast(SHIFT_START, this.rest, this.last)
-        newLast[0] = e
+        val newLast = bufferWithOnlyElement(e) as Array<T>
         return BigVector(newRest, newLast, this.size + 1)
     }
 

@@ -6,9 +6,14 @@ import java.util.*
 private object EmptyVector : ImmutableVector<Any?> {
     override val size = 0
 
-    override fun addLast(e: Any?): ImmutableVector<Any?> {
+    private fun bufferWithOnlyElement(e: Any?): Array<Any?> {
         val buffer = arrayOfNulls<Any?>(MAX_BUFFER_SIZE)
         buffer[0] = e
+        return buffer
+    }
+
+    override fun addLast(e: Any?): ImmutableVector<Any?> {
+        val buffer = this.bufferWithOnlyElement(e)
         return SmallVector(buffer, 1)
     }
 
