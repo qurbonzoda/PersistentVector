@@ -5,17 +5,18 @@ import immutableVector.ImmutableVector
 
 internal class SmallVector<T>(private val buffer: Array<T>, override val size: Int) : ImmutableVector<T> {
     override fun addLast(e: T): ImmutableVector<T> {
-        return if (this.buffer.size > this.size) {
-            val newBuffer = arrayOfNulls<Any?>(this.buffer.size)
-            System.arraycopy(this.buffer, 0, newBuffer, 0, this.buffer.size)
+        if (this.size < this.buffer.size) {
+            val newBuffer = this.buffer.copyOf()
             newBuffer[this.size] = e
-            SmallVector(newBuffer as Array<T>, this.size + 1)
-        } else {
+            return SmallVector(newBuffer, this.size + 1)
+        }
+        if (this.buffer.size < MAX_BUFFER_SIZE) {
             val newBuffer = arrayOfNulls<Any?>(this.buffer.size shl 1)
             System.arraycopy(this.buffer, 0, newBuffer, 0, this.buffer.size)
             newBuffer[this.size] = e
-            SmallVector(newBuffer as Array<T>, this.size + 1)
+            return SmallVector(newBuffer as Array<T>, this.size + 1)
         }
+        return MidVector(this.buffer, arrayOf<Any?>(e) as Array<T>, this.size + 1)
     }
 
     override fun get(index: Int): T {

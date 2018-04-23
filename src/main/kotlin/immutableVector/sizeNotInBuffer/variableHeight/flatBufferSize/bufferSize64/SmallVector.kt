@@ -1,4 +1,4 @@
-package immutableVector.sizeNotInBuffer.variableHeight.flatBufferSize.bufferSize8
+package immutableVector.sizeNotInBuffer.variableHeight.flatBufferSize.bufferSize64
 
 import immutableVector.ImmutableVector
 

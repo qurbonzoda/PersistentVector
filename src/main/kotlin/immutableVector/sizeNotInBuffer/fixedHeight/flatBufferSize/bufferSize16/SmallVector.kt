@@ -1,4 +1,4 @@
-package immutableVector.sizeNotInBuffer.variableHeight.flatBufferSize.bufferSize8
+package immutableVector.sizeNotInBuffer.fixedHeight.flatBufferSize.bufferSize16
 
 import immutableVector.ImmutableVector
 
@@ -8,8 +8,7 @@ internal class SmallVector<T>(private val buffer: Array<T>) : ImmutableVector<T>
 
     override fun addLast(e: T): ImmutableVector<T> {
         if (this.buffer.size == MAX_BUFFER_SIZE) {
-            val rhs = arrayOfNulls<Any?>(1) as Array<T>
-            rhs[0] = e
+            val rhs = arrayOf<Any?>(e) as Array<T>
             return MidVector(this.buffer, rhs)
         }
 

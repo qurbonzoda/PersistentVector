@@ -7,6 +7,11 @@ internal class SmallVector<T>(private val buffer: Array<T>) : ImmutableVector<T>
         get() = this.buffer.size
 
     override fun addLast(e: T): ImmutableVector<T> {
+        if (this.buffer.size == MAX_BUFFER_SIZE) {
+            val rhs = arrayOf<Any?>(e) as Array<T>
+            return MidVector(this.buffer, rhs)
+        }
+
         val newBuffer = arrayOfNulls<Any?>(this.size + 1)
         System.arraycopy(this.buffer, 0, newBuffer, 0, this.size)
         newBuffer[this.size] = e
