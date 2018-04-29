@@ -16,6 +16,10 @@ private object EmptyVector : ImmutableVector<Any?> {
         throw IndexOutOfBoundsException()
     }
 
+    override fun set(index: Int, e: Any?): ImmutableVector<Any?> {
+        throw IndexOutOfBoundsException()
+    }
+
     override fun iterator(): Iterator<Any?> {
         return Collections.emptyIterator()
     }

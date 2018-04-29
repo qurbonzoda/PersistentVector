@@ -111,6 +111,27 @@ class ImmutableVectorTests {
     }
 
     @Test
+    fun setTests() {
+        var vector = emptyVector<Int>()
+
+        assertThrows(IndexOutOfBoundsException::class.java) {
+            vector.set(0, 0)
+        }
+        assertEquals(2, vector.addLast(1).set(0, 2).get(0))
+
+        val elementsToAdd = 1000
+        repeat(times = elementsToAdd) { index ->
+            vector = vector.addLast(index * 2)
+
+            for (i in 0..index) {
+                assertEquals(i + index, vector.get(i))
+                vector = vector.set(i, i + index + 1)
+                assertEquals(i + index + 1, vector.get(i))
+            }
+        }
+    }
+
+    @Test
     fun randomOperationsTests() {
         val random = Random()
         val lists = mutableListOf(emptyList<Int>())

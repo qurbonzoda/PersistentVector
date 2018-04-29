@@ -29,13 +29,27 @@ internal class MidVector<T>(private val lhs: Array<T>,
     }
 
     override fun get(index: Int): T {
-        if (index > this.size) {
+        if (index >= this.size) {
             throw IndexOutOfBoundsException()
         }
         if (index < MAX_BUFFER_SIZE) {
             return this.lhs[index]
         }
         return this.rhs[index - MAX_BUFFER_SIZE]
+    }
+
+    override fun set(index: Int, e: T): ImmutableVector<T> {
+        if (index >= this.size) {
+            throw IndexOutOfBoundsException()
+        }
+        if (index < MAX_BUFFER_SIZE) {
+            val newLhs = this.lhs.copyOf()
+            newLhs[index] = e
+            return MidVector(newLhs, this.rhs, this.size)
+        }
+        val newRhs = this.rhs.copyOf()
+        newRhs[index - MAX_BUFFER_SIZE] = e
+        return MidVector(this.lhs, newRhs, this.size)
     }
 
     override fun iterator(): Iterator<T> {

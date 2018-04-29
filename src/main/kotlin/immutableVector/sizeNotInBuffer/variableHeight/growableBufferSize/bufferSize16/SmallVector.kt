@@ -23,6 +23,15 @@ internal class SmallVector<T>(private val buffer: Array<T>, override val size: I
         return this.buffer[index]
     }
 
+    override fun set(index: Int, e: T): ImmutableVector<T> {
+        if (index >= this.size) {
+            throw IndexOutOfBoundsException()
+        }
+        val newBuffer = this.buffer.copyOf()
+        newBuffer[index] = e
+        return SmallVector(newBuffer, this.size)
+    }
+
     override fun iterator(): Iterator<T> {
         return BufferIterator(this.buffer, this.size)
     }

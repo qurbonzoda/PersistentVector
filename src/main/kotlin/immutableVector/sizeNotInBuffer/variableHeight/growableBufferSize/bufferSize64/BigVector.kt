@@ -81,6 +81,33 @@ internal class BigVector<T>(private val rest: Array<Any?>,
         return buffer[index and MAX_BUFFER_SIZE_MINUS_ONE]
     }
 
+    override fun set(index: Int, e: T): ImmutableVector<T> {
+        if (index < 0 || index >= this.size) {
+            throw IndexOutOfBoundsException()
+        }
+
+        if (this.lastOff() <= index) {
+            val newLast = this.last.copyOf()
+            newLast[index and MAX_BUFFER_SIZE_MINUS_ONE] = e
+            return BigVector(this.rest, newLast, this.size, this.shiftStart)
+        }
+
+        val newRest = setInRest(this.rest, this.shiftStart, index, e)
+        return BigVector(newRest, this.last, this.size, this.shiftStart)
+    }
+
+    private fun setInRest(restNode: Array<Any?>, shift: Int, index: Int, e: T): Array<Any?> {
+        val bufferIndex = (index shr shift) and MAX_BUFFER_SIZE_MINUS_ONE
+        val newRestNode = restNode.copyOf()
+        if (shift == 0) {
+            newRestNode[bufferIndex] = e
+        } else {
+            newRestNode[bufferIndex] = setInRest(newRestNode[bufferIndex] as Array<Any?>,
+                    shift - LOG_MAX_BUFFER_SIZE, index, e)
+        }
+        return newRestNode
+    }
+
     override fun iterator(): Iterator<T> {
         return BigVectorIterator(this.rest, this.last, this.size,
                 this.shiftStart / LOG_MAX_BUFFER_SIZE + 1, LOG_MAX_BUFFER_SIZE)
